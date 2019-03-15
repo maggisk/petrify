@@ -6,14 +6,14 @@ import "path/filepath"
 import "strings"
 
 func CopyDir(src string, dst string) {
-	checkError(os.MkdirAll(dst, 0755))
+	checkError(os.MkdirAll(dst, DIR_BITMASK))
 
 	var visit func(string, os.FileInfo, error) error
 	visit = func(path string, fileInfo os.FileInfo, err error) error {
 		checkError(err)
 		thisDst := strings.Replace(path, src, dst, 1)
 		if fileInfo.IsDir() {
-			checkError(os.MkdirAll(thisDst, 0755))
+			checkError(os.MkdirAll(thisDst, DIR_BITMASK))
 		} else {
 			checkError(CopyFile(path, thisDst))
 		}

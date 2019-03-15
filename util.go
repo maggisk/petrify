@@ -2,6 +2,9 @@ package main
 
 import "fmt"
 import "os"
+import "net"
+import "net/http"
+import "bufio"
 
 // permission bitmasks for new files and directories
 var FILE_BITMASK os.FileMode = 0644
@@ -21,4 +24,20 @@ func checkError(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func ServeStatic(dir string) int {
+	listener, err := net.Listen("tcp", ":0")
+	checkError(err)
+	port := listener.Addr().(*net.TCPAddr).Port
+	fs := http.FileServer(http.Dir(dir))
+	http.Handle("/", fs)
+	go http.Serve(listener, nil)
+	return port
+}
+
+func ReadLine() string {
+	reader := bufio.NewReader(os.Stdin)
+	s, _ := reader.ReadString('\n')
+	return s
 }

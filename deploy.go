@@ -11,7 +11,7 @@ import "gopkg.in/src-d/go-git.v4/plumbing/object"
 import "gopkg.in/src-d/go-git.v4/plumbing/transport"
 
 func deployToGithub(config *Config) {
-	dir, err := ioutil.TempDir("", "petrify")
+	dir, err := ioutil.TempDir("", "petrify-deploy-")
 	checkError(err)
 	defer os.RemoveAll(dir)
 
