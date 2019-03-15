@@ -60,25 +60,18 @@ func (crawler *Crawler) Crawl(path string) {
 	// write page to file
 	contentType := getContentType(resp)
 	filePath := crawler.buildDir + urlToFilePath(url, contentType)
-	crawler.SaveFile(resp, filePath)
+	body, err := ioutil.ReadAll(resp.Body)
+	checkError(err)
+	resp.Body.Close()
+	checkError(os.MkdirAll(filepath.Dir(filePath), DIR_BITMASK))
+	checkError(ioutil.WriteFile(filePath, body, FILE_BITMASK))
 
 	// follow internal links in html pages
 	if strings.HasPrefix(contentType, "text/html") {
-		body, _ := ioutil.ReadAll(resp.Body)
-		resp.Body.Close()
 		for _, link := range extractLinks(body, crawler.linkRules) {
 			crawler.Crawl(link)
 		}
 	}
-}
-
-func (crawler *Crawler) SaveFile(resp *http.Response, filePath string) {
-	body, err := ioutil.ReadAll(resp.Body)
-	checkError(err)
-	resp.Body.Close()
-	resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
-	checkError(os.MkdirAll(filepath.Dir(filePath), DIR_BITMASK))
-	checkError(ioutil.WriteFile(filePath, body, FILE_BITMASK))
 }
 
 func extractLinks(body []byte, linkRules map[string]bool) []string {
@@ -118,8 +111,8 @@ func isRelativeURL(url string) bool {
 		return false
 	}
 
-	// protocol-relative url
-	if strings.HasPrefix(url, "//") {
+	// empty, protocol-relative url and fragment identifier
+	if url == "" || strings.HasPrefix(url, "//") || strings.HasPrefix(url, "#") {
 		return false
 	}
 

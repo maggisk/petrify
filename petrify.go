@@ -21,6 +21,8 @@ type Config struct {
 	DefaultLinkRules  string
 	LinkRules         string
 	Path404           string
+	DeployToGithub    string
+	CNAME             string
 }
 
 func defaultConfig() *Config {
@@ -90,26 +92,25 @@ func main() {
 	crawler.CrawlAll(config.EntryPoints)
 
 	if len(config.Path404) > 0 {
-		resp, err := http.Get(config.ServerURL + config.Path404)
-		checkError(err)
-		crawler.SaveFile(resp, filepath.Join(config.BuildDir, "404.html"))
+		crawler.Crawl(config.Path404)
 	}
 
 	if config.Preview {
-		listener, port := getListenerAndPort(config.PreviewServerPort)
-
 		go func() {
+			listener, port := getListenerAndPort(config.PreviewServerPort)
 			fs := http.FileServer(http.Dir(config.BuildDir))
 			http.Handle("/", fs)
 			browser.OpenURL(fmt.Sprintf("http://localhost:%d", port))
 			http.Serve(listener, nil)
+			fmt.Printf("Preview running at http://localhost:%d\n", port)
+			fmt.Println("Press enter to continue")
 		}()
 
-		fmt.Printf("Preview running at http://localhost:%d\n", port)
-		fmt.Println("Press enter to continue")
 		reader := bufio.NewReader(os.Stdin)
 		reader.ReadString('\n')
 	}
 
-	// TODO: deploy
+	if len(config.DeployToGithub) > 0 {
+		deployToGithub(config)
+	}
 }
