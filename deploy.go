@@ -59,7 +59,7 @@ func deployToGithub(config *Config) {
 	checkError(err)
 
 	if len(status) == 0 {
-		info("No changes to commit")
+		info("Nothing to commit")
 		return
 	}
 

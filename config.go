@@ -17,6 +17,7 @@ type Config struct {
 	Path404             string
 	DeployToGithub      string
 	CNAME               string
+	Verbose             bool
 }
 
 func DefaultConfig() *Config {

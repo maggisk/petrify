@@ -20,6 +20,7 @@ func copyStatics(staticDirs []string, buildDir string) {
 		if !filepath.IsAbs(dst) {
 			dst = filepath.Join(buildDir, dst)
 		}
+		verbose("Copying static '%s' -> '%s'", src, dst)
 		CopyDir(src, dst)
 	}
 }
@@ -30,6 +31,9 @@ func main() {
 	config.ReadConfigFile(CONFIG_FILE)
 	config.Normalize()
 	config.ValidateForBuild()
+
+	// set global VERBOSE var in util.go
+	VERBOSE = config.Verbose || os.Getenv("VERBOSE") == "1"
 
 	// set current working directory
 	os.Chdir(config.CWD)

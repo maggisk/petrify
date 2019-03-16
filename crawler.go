@@ -63,6 +63,7 @@ func (crawler *Crawler) Crawl(path string) {
 	body, err := ioutil.ReadAll(resp.Body)
 	checkError(err)
 	resp.Body.Close()
+	verbose("Writing '%s' to file '%s'", url, filePath)
 	checkError(os.MkdirAll(filepath.Dir(filePath), DIR_BITMASK))
 	checkError(ioutil.WriteFile(filePath, body, FILE_BITMASK))
 

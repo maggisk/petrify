@@ -13,8 +13,10 @@ func CopyDir(src string, dst string) {
 		checkError(err)
 		thisDst := strings.Replace(path, src, dst, 1)
 		if fileInfo.IsDir() {
+			verbose("Creating dir '%s'", thisDst)
 			checkError(os.MkdirAll(thisDst, DIR_BITMASK))
 		} else {
+			verbose("Copying file '%s' -> '%s'", path, thisDst)
 			checkError(CopyFile(path, thisDst))
 		}
 		return nil
