@@ -10,15 +10,14 @@ if [ "$version" = "" ]; then
     exit -1
 fi
 
-echo "building petrify $version"
-
 build() {
+    echo "$4"
     env GOOS=$1 GOARCH=$2 go build -o "build/$3"
     cd build
     if [ "$1" = "windows" ]; then
-        zip "$4.zip" "$3"
+        zip "$4.zip" "$3" --quiet
     else
-        tar -zcvf "$4.tar.gz" "$3"
+        tar -zcf "$4.tar.gz" "$3"
     fi
     rm "$3"
     cd ..
