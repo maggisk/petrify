@@ -10,6 +10,14 @@ import gitconfig "gopkg.in/src-d/go-git.v4/config"
 import "gopkg.in/src-d/go-git.v4/plumbing/object"
 import "gopkg.in/src-d/go-git.v4/plumbing/transport"
 
+func Deploy(config *Config) {
+	config.ValidateForDeploy()
+	if config.DeployToGithub != "" {
+		deployToGithub(config)
+	}
+	// TODO: more deployment options
+}
+
 func deployToGithub(config *Config) {
 	dir, err := ioutil.TempDir("", "petrify-deploy-")
 	checkError(err)

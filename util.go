@@ -5,6 +5,7 @@ import "os"
 import "net"
 import "net/http"
 import "bufio"
+import "strings"
 
 var VERBOSE bool = false
 
@@ -49,4 +50,17 @@ func ReadLine() string {
 	reader := bufio.NewReader(os.Stdin)
 	s, _ := reader.ReadString('\n')
 	return s
+}
+
+func ReadYesNo(prompt string) bool {
+	fmt.Println(prompt)
+	for {
+		a := strings.ToLower(strings.TrimSpace(ReadLine()))
+		if a == "y" || a == "yes" {
+			return true
+		} else if a == "n" || a == "no" {
+			return false
+		}
+		fmt.Println("Please answer yes or no")
+	}
 }
