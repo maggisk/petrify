@@ -1,3 +1,4 @@
-/petrify
 .petrify
+petrify
 /build
+/static-build

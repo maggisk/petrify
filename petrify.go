@@ -5,6 +5,7 @@ import "fmt"
 import "strings"
 import "io/ioutil"
 import "path/filepath"
+import "runtime/debug"
 import "github.com/pkg/browser"
 
 const CONFIG_FILE = ".petrify"
@@ -84,6 +85,24 @@ func Wizard(config *Config) {
 }
 
 func main() {
+	command := "wizard"
+	if len(os.Args) > 1 {
+		command = strings.ToLower(os.Args[1])
+	}
+
+	if command == "wizard" {
+		// prevent window from immediately closing when run by doubleclicking
+		// TODO: this also stops process from exiting when run from a terminal. can we do better?
+		defer func() {
+			if err := recover(); err != nil {
+				debug.PrintStack()
+				fmt.Println(err)
+			}
+			fmt.Println("Press enter to exit...")
+			ReadLine()
+		}()
+	}
+
 	// create config
 	config := DefaultConfig()
 	config.ReadConfigFile(CONFIG_FILE)
@@ -97,11 +116,6 @@ func main() {
 	os.Chdir(config.CWD)
 
 	// TODO: add option to launch dev server from this process?
-
-	command := "wizard"
-	if len(os.Args) > 1 {
-		command = strings.ToLower(os.Args[1])
-	}
 
 	switch command {
 	case "build":

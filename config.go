@@ -1,9 +1,12 @@
 package main
 
 import "os"
-import "log"
 import "strings"
+import "errors"
 import "github.com/BurntSushi/toml"
+
+var ErrMissingConfig = errors.New("ServerURL configuration missing. Create a .petrify configuration file containing: ServerURL = \"http://url-to-dev-server\"")
+var ErrMissingDeploy = errors.New("Missing deployment configuration. Unable to deploy website")
 
 type Config struct {
 	CWD                 string
@@ -49,7 +52,7 @@ func (config *Config) Normalize() {
 
 func (config *Config) ValidateForBuild() {
 	if config.ServerURL == "" {
-		log.Fatal("ServerURL configuration missing. Create a .petrify configuration file containing: ServerURL = \"http://url-to-dev-server\"")
+		panic(ErrMissingConfig)
 	}
 
 	if !config.hasDeploymentConfig() {
@@ -59,7 +62,7 @@ func (config *Config) ValidateForBuild() {
 
 func (config *Config) ValidateForDeploy() {
 	if !config.hasDeploymentConfig() {
-		log.Fatal("Missing deployment configuration. Unable to deploy website")
+		panic(ErrMissingDeploy)
 	}
 }
 
