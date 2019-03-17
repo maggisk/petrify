@@ -1,8 +1,9 @@
 #!/bin/bash
 
+#set -x
 set -e
 
-version="$1"
+version=$(git describe --dirty)
 
 if [ "$version" = "" ]; then
     echo "version required"
@@ -24,6 +25,7 @@ build() {
 }
 
 mkdir -p build
+rm -rf build/*
 build "windows" "amd64" "petrify.exe" "petrify-$version.windows-64bit"
 build "windows" "386" "petrify.exe" "petrify-$version.windows-32bit"
 build "darwin" "amd64" "petrify" "petrify-$version.macOS-64bit"
