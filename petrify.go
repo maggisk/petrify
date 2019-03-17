@@ -91,8 +91,12 @@ func main() {
 	}
 
 	if command == "wizard" {
-		// prevent window from immediately closing when run by doubleclicking
-		// TODO: this also stops process from exiting when run from a terminal. can we do better?
+		// TODO: We assume run by double-click when in wizard mode. can we do better?
+
+		// set current working directory to the path of the petrify binary
+		os.Chdir(filepath.Dir(os.Args[0]))
+
+		// prevent window from immediately closing when run by double-clicking
 		defer func() {
 			if err := recover(); err != nil {
 				debug.PrintStack()
@@ -125,7 +129,7 @@ func main() {
 		select {} // wait forever
 	case "deploy":
 		Deploy(config)
-	default:
+	case "wizard":
 		Wizard(config)
 	}
 }
