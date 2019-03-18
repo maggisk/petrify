@@ -45,7 +45,7 @@ If you want to run it from the command line you can also tell it what to do with
 Petrify will look for a `.petrify` [TOML](https://github.com/toml-lang/toml) configuration file in the same directory as the petrify binary
 
 **Config name** | **Description** | **Default value** | **Example**
---- | --- || --
+--- | --- | --- | ---
 **ServerURL** | **Required.** URL to your development webserver | "" | ServerURL = "http://localhost:5000"
 **CWD** | Set current working directory. All other filesystem paths can be set relative to this one | "." | CWD = "/home/maggisk/git/maggisk-website"
 **EntryPoints** | List of paths where crawler should start crawling | ["/"] | EntryPoints = ["/", "/sitemap.xml", "/robots.txt"]
