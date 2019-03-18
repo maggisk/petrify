@@ -1,14 +1,18 @@
 package main
 
+import "fmt"
 import "os"
 import "strings"
 import "io/ioutil"
 import "path/filepath"
 import "time"
+import "syscall"
+import "golang.org/x/crypto/ssh/terminal"
 import "gopkg.in/src-d/go-git.v4"
 import gitconfig "gopkg.in/src-d/go-git.v4/config"
 import "gopkg.in/src-d/go-git.v4/plumbing/object"
 import "gopkg.in/src-d/go-git.v4/plumbing/transport"
+import "gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 
 func Deploy(config *Config) {
 	config.ValidateForDeploy()
@@ -19,6 +23,12 @@ func Deploy(config *Config) {
 }
 
 func deployToGithub(config *Config) {
+	// prompt for password when using https
+	var auth *http.BasicAuth
+	if strings.HasPrefix(config.DeployToGithub, "https:") {
+		auth = getAuth("github", config.GithubUsername, "GITHUB_USERNAME", config.GithubPassword, "GITHUB_PASSWORD")
+	}
+
 	dir, err := ioutil.TempDir("", "petrify-deploy-")
 	checkError(err)
 	defer os.RemoveAll(dir)
@@ -26,6 +36,7 @@ func deployToGithub(config *Config) {
 	repo, err := git.PlainClone(dir, false, &git.CloneOptions{
 		URL:      config.DeployToGithub,
 		Progress: os.Stdout,
+		Auth:     auth,
 	})
 
 	if err != transport.ErrEmptyRemoteRepository {
@@ -83,5 +94,31 @@ func deployToGithub(config *Config) {
 	checkError(repo.Push(&git.PushOptions{
 		RemoteName: "origin",
 		Progress:   os.Stdout,
+		Auth:       auth,
 	}))
+}
+
+func getAuth(siteName, username, usernameEnv, password, passwordEnv string) *http.BasicAuth {
+	if username == "" {
+		username = os.Getenv(usernameEnv)
+	}
+	if username == "" {
+		fmt.Printf("%s username: ", siteName)
+		username = strings.TrimRight(ReadLine(), "\r\n")
+	}
+
+	if password == "" {
+		password = os.Getenv(passwordEnv)
+	}
+	if password == "" {
+		fmt.Printf("%s password: ", siteName)
+		passwordBytes, err := terminal.ReadPassword(int(syscall.Stdin))
+		checkError(err)
+		password = string(passwordBytes)
+	}
+
+	return &http.BasicAuth{
+		Username: username,
+		Password: password,
+	}
 }

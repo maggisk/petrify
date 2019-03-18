@@ -73,7 +73,7 @@ func Wizard(config *Config) {
 
 	// enter deploy build loop until deployed successfully
 	for {
-		if ReadYesNo(fmt.Sprintf("Deploy website to %s ? (yes/no)", config.DeployToGithub)) {
+		if ReadYesNo(fmt.Sprintf("Deploy website to %s? (yes/no)", config.DeployToGithub)) {
 			Deploy(config)
 			break
 		}

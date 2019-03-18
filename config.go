@@ -19,6 +19,8 @@ type Config struct {
 	ExtractLinks        string
 	Path404             string
 	DeployToGithub      string
+	GithubUsername      string
+	GithubPassword      string
 	CNAME               string
 	Verbose             bool
 }
