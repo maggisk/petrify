@@ -5,14 +5,9 @@ set -e
 
 version=$(git describe --dirty)
 
-if [ "$version" = "" ]; then
-    echo "version required"
-    exit -1
-fi
-
 build() {
     echo "$4"
-    env GOOS=$1 GOARCH=$2 go build -o "build/$3"
+    env GOOS=$1 GOARCH=$2 go build -ldflags="-X main.version=$version" -o "build/$3"
     cd build
     if [ "$1" = "windows" ]; then
         zip "$4.zip" "$3" --quiet
@@ -25,6 +20,7 @@ build() {
 
 mkdir -p build
 rm -rf build/*
+
 build "windows" "amd64" "petrify.exe" "petrify-$version.windows-64bit"
 build "windows" "386" "petrify.exe" "petrify-$version.windows-32bit"
 build "darwin" "amd64" "petrify" "petrify-$version.macOS-64bit"

@@ -10,6 +10,8 @@ import "github.com/pkg/browser"
 
 const CONFIG_FILE = ".petrify"
 
+var version = "undefined"
+
 func copyStatics(staticDirs []string, buildDir string) {
 	for _, dir := range staticDirs {
 		parts := strings.SplitN(dir, ":", 2)
@@ -88,6 +90,11 @@ func main() {
 	command := "wizard"
 	if len(os.Args) > 1 {
 		command = strings.ToLower(os.Args[1])
+	}
+
+	if command == "version" {
+		fmt.Println(version)
+		return
 	}
 
 	if command == "wizard" {
